@@ -3,7 +3,7 @@
 
 ## Screnshot
 
-    ![]("pic.png")
+   ![](pic.png)
     
 
 
