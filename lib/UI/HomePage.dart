@@ -14,29 +14,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   List<WallpaperModel> wallpapers = new List();
 
   String searchText;
- 
-  getTrendingWallpapers() async {
-   try {
-       var responce = await http.get(
-        'https://api.pexels.com/v1/curated?per_page=15&page=1',
-        headers: {"Authorization": apiKey});
-   // print(responce.body.toString());
 
-    Map<String, dynamic> jsonData = jsonDecode(responce.body);
-    jsonData['photos'].forEach((element) {
-      // print(element);
-      WallpaperModel wallpaperModel = new WallpaperModel();
-      wallpaperModel = WallpaperModel.fromMap(element);
-      wallpapers.add(wallpaperModel);
-    });
-    setState(() {});
-   } catch (e) {
-     print(e.toString());
-   }
+  getTrendingWallpapers() async {
+    try {
+      var responce = await http.get(
+          'https://api.pexels.com/v1/curated?per_page=15&page=1',
+          headers: {"Authorization": apiKey});
+      // print(responce.body.toString());
+
+      Map<String, dynamic> jsonData = jsonDecode(responce.body);
+      jsonData['photos'].forEach((element) {
+        // print(element);
+        WallpaperModel wallpaperModel = new WallpaperModel();
+        wallpaperModel = WallpaperModel.fromMap(element);
+        wallpapers.add(wallpaperModel);
+      });
+      setState(() {});
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
@@ -88,9 +87,7 @@ class _HomePageState extends State<HomePage> {
                                   MaterialPageRoute(
                                       builder: (context) => Search(
                                             searchText: searchText,
-                                          )
-                                        )
-                                      );
+                                          )));
                             },
                             child: Container(child: Icon(Icons.search)),
                           ),
@@ -99,22 +96,22 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
- 
-                SizedBox( 
-                  height: 12.0,
-                ),
-
-                //Horizontal Categoris
-                CategoriesCard(), 
 
                 SizedBox(
                   height: 12.0,
                 ),
 
-               wallpaperList(
+                //Horizontal Categoris
+                CategoriesCard(),
+
+                SizedBox(
+                  height: 12.0,
+                ),
+
+                wallpaperList(
                   wallpapers: wallpapers,
                   context: context,
-                ),  
+                ),
               ],
             ),
           ),
