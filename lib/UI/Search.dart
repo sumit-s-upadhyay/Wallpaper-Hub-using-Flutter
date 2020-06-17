@@ -1,30 +1,28 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:wallpaper_hub/Data/data.dart';
 import 'package:wallpaper_hub/Model/wallpaper_model.dart';
-import 'package:wallpaper_hub/UI/Search.dart';
-import 'package:wallpaper_hub/Widget/CategoriesCard.dart';
-import 'package:http/http.dart' as http;
 import 'package:wallpaper_hub/Widget/Widget.dart';
+import 'package:http/http.dart' as http;
 
-class HomePage extends StatefulWidget {
+class Search extends StatefulWidget {
+  final searchText;
+  Search({this.searchText});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _SearchState createState() => _SearchState();
 }
 
-class _HomePageState extends State<HomePage> {
-
-  List<WallpaperModel> wallpapers = new List();
-
+class _SearchState extends State<Search> {
   String searchText;
- 
-  getTrendingWallpapers() async {
-   try {
-       var responce = await http.get(
-        'https://api.pexels.com/v1/curated?per_page=15&page=1',
+  List<WallpaperModel> wallpapers = new List();
+  var responce;
+
+  getSearchWallpapers(String query) async {
+    responce = await http.get(
+        'https://api.pexels.com/v1/search?query=$query&per_page=15&page=1',
         headers: {"Authorization": apiKey});
-   // print(responce.body.toString());
+    //print(responce.body.toString());
 
     Map<String, dynamic> jsonData = jsonDecode(responce.body);
     jsonData['photos'].forEach((element) {
@@ -34,14 +32,11 @@ class _HomePageState extends State<HomePage> {
       wallpapers.add(wallpaperModel);
     });
     setState(() {});
-   } catch (e) {
-     print(e.toString());
-   }
   }
 
   @override
   void initState() {
-    getTrendingWallpapers();
+    getSearchWallpapers(widget.searchText);
     super.initState();
   }
 
@@ -54,11 +49,16 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         elevation: 0.0,
         title: brandName(),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black87),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: SingleChildScrollView(
-          child: Container(
+      body: SingleChildScrollView(
+        child: Container(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Card(
@@ -83,14 +83,7 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Search(
-                                            searchText: searchText,
-                                          )
-                                        )
-                                      );
+                              getSearchWallpapers(searchText);
                             },
                             child: Container(child: Icon(Icons.search)),
                           ),
@@ -99,22 +92,17 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
- 
-                SizedBox( 
-                  height: 12.0,
-                ),
-
-                //Horizontal Categoris
-                CategoriesCard(), 
-
                 SizedBox(
                   height: 12.0,
                 ),
-
-               wallpaperList(
-                  wallpapers: wallpapers,
-                  context: context,
-                ),  
+                wallpapers == null
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : wallpaperList(
+                        wallpapers: wallpapers,
+                        context: context,
+                      ),
               ],
             ),
           ),
