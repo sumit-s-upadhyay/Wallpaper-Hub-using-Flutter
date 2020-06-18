@@ -40,7 +40,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    getTrendingWallpapers(); 
+    getTrendingWallpapers();
+    setState(() {});
     super.initState();
   }
 
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.only(left: 16.0),
                     child: TextField(
                       onChanged: (value) {
-                        if (searchText == '') {  
+                        if (searchText == '') {
                           return;
                         }
                         searchText = value;
