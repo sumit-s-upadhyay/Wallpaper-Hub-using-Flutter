@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_downloader/image_downloader.dart';
 
-
 class ImageView extends StatefulWidget {
   final imageURl;
   ImageView(this.imageURl);
@@ -103,28 +102,27 @@ class _ImageViewState extends State<ImageView> {
           );
   }
 
-  saveImges(String url) async { 
+  saveImges(String url) async {
     try {
-  // Saved with this method.
-  var imageId = await ImageDownloader.downloadImage(url);
-  if (imageId == null) {
-    print("Downliad image: $imageId");
-    return;
+      // Saved with this method.
+      var imageId = await ImageDownloader.downloadImage(url);
+      if (imageId == null) {
+        print("Downliad image: $imageId");
+        return;
+      }
+      print("Error Ocurein saveImges");
+      // Below is a method of obtaining saved image information.
+      var fileName = await ImageDownloader.findName(imageId);
+      var path = await ImageDownloader.findPath(imageId);
+      var size = await ImageDownloader.findByteSize(imageId);
+      var mimeType = await ImageDownloader.findMimeType(imageId);
+      print(fileName);
+      print(path);
+      print(size);
+      print(mimeType);
+    } on PlatformException catch (error) {
+      print("Error Ocure");
+      print(error);
+    }
   }
-   print("Error Ocurein saveImges");
-  // Below is a method of obtaining saved image information.
-  var fileName = await ImageDownloader.findName(imageId);
-  var path = await ImageDownloader.findPath(imageId);
-  var size = await ImageDownloader.findByteSize(imageId);
-  var mimeType = await ImageDownloader.findMimeType(imageId);
-
-} on PlatformException catch (error) {
-  print("Error Ocure");
-  print(error);
 }
-  }
-
-
-}
-
-
