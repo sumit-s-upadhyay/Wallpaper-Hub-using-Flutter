@@ -1,11 +1,9 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:dio/dio.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
+import 'package:image_downloader/image_downloader.dart';
+
 
 class ImageView extends StatefulWidget {
   final imageURl;
@@ -105,34 +103,28 @@ class _ImageViewState extends State<ImageView> {
           );
   }
 
-  saveImges(String url) async {
+  saveImges(String url) async { 
     try {
-      await _askPermission();
-      var response = await Dio()
-          .get(url, options: Options(responseType: ResponseType.bytes));
-      final result =
-          await ImageGallerySaver.saveImage(Uint8List.fromList(response.data));
-      print(result);
-      Navigator.pop(context);
-    } catch (e) {
-      print(e.toString());
-    }
+  // Saved with this method.
+  var imageId = await ImageDownloader.downloadImage(url);
+  if (imageId == null) {
+    print("Downliad image: $imageId");
+    return;
   }
+   print("Error Ocurein saveImges");
+  // Below is a method of obtaining saved image information.
+  var fileName = await ImageDownloader.findName(imageId);
+  var path = await ImageDownloader.findPath(imageId);
+  var size = await ImageDownloader.findByteSize(imageId);
+  var mimeType = await ImageDownloader.findMimeType(imageId);
+
+} on PlatformException catch (error) {
+  print("Error Ocure");
+  print(error);
+}
+  }
+
+
 }
 
-_askPermission() async {
-  try {
-    
-    
-    if (Platform.isIOS) {
-      /*Map<PermissionGroup, PermissionStatus> permissions =
-          */
-      await PermissionHandler().requestPermissions([PermissionGroup.photos]);
-    } else {
-      /* PermissionStatus permission = */ await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.storage);
-    }
-  } catch (e) {
-    print(e.toString());
-  }
-}
+

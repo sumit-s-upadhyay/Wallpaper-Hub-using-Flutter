@@ -14,7 +14,9 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  String searchText;
+
+  String searchText='';
+
   List<WallpaperModel> wallpapers = new List();
   var responce;
 
@@ -31,7 +33,9 @@ class _SearchState extends State<Search> {
       wallpaperModel = WallpaperModel.fromMap(element);
       wallpapers.add(wallpaperModel);
     });
-    setState(() {});
+    setState(() {
+      print(responce.body.toString());
+    });
   }
 
   @override
@@ -83,6 +87,7 @@ class _SearchState extends State<Search> {
                           padding: const EdgeInsets.only(right: 16.0),
                           child: GestureDetector(
                             onTap: () {
+                              print("searchText $searchText");
                               getSearchWallpapers(searchText);
                             },
                             child: Container(child: Icon(Icons.search)),
